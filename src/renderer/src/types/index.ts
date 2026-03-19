@@ -50,15 +50,47 @@ export interface ClavisAPI {
   showOpenDialog: () => Promise<string | null>
   showSaveDialog: (defaultName: string) => Promise<string | null>
 
-  // APDU debug
+  // APDU / CTAP HID debug
   sendApdu: (hexCommand: string) => Promise<{
     success: boolean
     response?: {
       raw: string
-      sw1: number
-      sw2: number
       data: string
+      cmd: number
+      frameCount: number
+      totalLength: number
     }
     error?: string
   }>
+
+  // CTAP HID 协议操作
+  ctapInit: () => Promise<{
+    success: boolean
+    result?: CtapChannelInfo
+    error?: string
+  }>
+  ctapChannelInfo: () => Promise<{ cid: string; info: CtapChannelInfo } | null>
+  ctapSend: (cmd: number, payload: number[]) => Promise<{
+    success: boolean
+    response?: {
+      raw: string
+      data: string
+      cmd: number
+      frameCount: number
+      totalLength: number
+    }
+    error?: string
+  }>
+}
+
+export interface CtapChannelInfo {
+  nonce: number[]
+  cid: number[]
+  cidHex: string
+  protocolVersion: number
+  majorVersion: number
+  minorVersion: number
+  buildVersion: number
+  capabilities: number
+  capabilityNames: string[]
 }

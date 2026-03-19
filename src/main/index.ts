@@ -139,10 +139,35 @@ function registerIpcHandlers(): void {
     connected: usbManager.getConnectionStatus()
   }))
 
-  // APDU debug: send raw hex command to device
+  // APDU debug: send raw hex command to device (帧自动补零到 64 字节)
   ipcMain.handle('apdu:send', (_, hexCommand: string) => {
     try {
-      const response = usbManager.sendApdu(hexCommand)
+      const response = usbManager.sendRawHex(hexCommand)
+      return { success: true, response }
+    } catch (err) {
+      return { success: false, error: String(err) }
+    }
+  })
+
+  // CTAP HID: 通道初始化
+  ipcMain.handle('ctap:init', () => {
+    try {
+      const result = usbManager.initChannel()
+      return { success: true, result }
+    } catch (err) {
+      return { success: false, error: String(err) }
+    }
+  })
+
+  // CTAP HID: 获取通道信息
+  ipcMain.handle('ctap:channelInfo', () => {
+    return usbManager.getChannelInfo()
+  })
+
+  // CTAP HID: 发送 CTAP 命令（使用已分配 CID）
+  ipcMain.handle('ctap:send', (_, cmd: number, payload: number[]) => {
+    try {
+      const response = usbManager.sendCtapHid(cmd, payload)
       return { success: true, response }
     } catch (err) {
       return { success: false, error: String(err) }

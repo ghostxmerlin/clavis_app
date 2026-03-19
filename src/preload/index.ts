@@ -38,9 +38,17 @@ const clavisAPI = {
   showSaveDialog: (defaultName: string): Promise<string | null> =>
     ipcRenderer.invoke('dialog:save', defaultName),
 
-  // APDU debug
+  // APDU debug (原始帧发送)
   sendApdu: (hexCommand: string): Promise<{ success: boolean; response?: unknown; error?: string }> =>
-    ipcRenderer.invoke('apdu:send', hexCommand)
+    ipcRenderer.invoke('apdu:send', hexCommand),
+
+  // CTAP HID 协议操作
+  ctapInit: (): Promise<{ success: boolean; result?: unknown; error?: string }> =>
+    ipcRenderer.invoke('ctap:init'),
+  ctapChannelInfo: (): Promise<unknown> =>
+    ipcRenderer.invoke('ctap:channelInfo'),
+  ctapSend: (cmd: number, payload: number[]): Promise<{ success: boolean; response?: unknown; error?: string }> =>
+    ipcRenderer.invoke('ctap:send', cmd, payload)
 }
 
 if (process.contextIsolated) {
