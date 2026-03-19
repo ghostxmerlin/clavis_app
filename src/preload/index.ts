@@ -36,7 +36,11 @@ const clavisAPI = {
   // Dialog helpers
   showOpenDialog: (): Promise<string | null> => ipcRenderer.invoke('dialog:open'),
   showSaveDialog: (defaultName: string): Promise<string | null> =>
-    ipcRenderer.invoke('dialog:save', defaultName)
+    ipcRenderer.invoke('dialog:save', defaultName),
+
+  // APDU debug
+  sendApdu: (hexCommand: string): Promise<{ success: boolean; response?: unknown; error?: string }> =>
+    ipcRenderer.invoke('apdu:send', hexCommand)
 }
 
 if (process.contextIsolated) {

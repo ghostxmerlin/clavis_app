@@ -1,8 +1,9 @@
 import { BrowserWindow } from 'electron'
+import { hexToBytes, bytesToHex, parseApduResponse, type ApduResponse } from './apdu-parser'
 
-// Placeholder VID/PID - replace with actual device values
-const TARGET_VENDOR_ID = 0xffff
-const TARGET_PRODUCT_ID = 0x0001
+// Device VID/PID
+const TARGET_VENDOR_ID = 0x2f0a
+const TARGET_PRODUCT_ID = 0x0f71
 const POLL_INTERVAL_MS = 1000
 
 interface DeviceInfo {
@@ -23,6 +24,7 @@ export class UsbManager {
   private pollTimer: ReturnType<typeof setInterval> | null = null
   private isConnected = false
   private mainWindow: BrowserWindow | null = null
+  private device: InstanceType<typeof import('node-hid').HID> | null = null
 
   setMainWindow(window: BrowserWindow): void {
     this.mainWindow = window
@@ -50,6 +52,77 @@ export class UsbManager {
     return this.isConnected
   }
 
+  /** 打开 HID 设备连接 */
+  private openDevice(path?: string): boolean {
+    if (!HID) return false
+    if (this.device) return true
+    try {
+      if (path) {
+        this.device = new HID.HID(path)
+      } else {
+        this.device = new HID.HID(TARGET_VENDOR_ID, TARGET_PRODUCT_ID)
+      }
+      console.log('HID device opened')
+      return true
+    } catch (err) {
+      console.error('Failed to open HID device:', err)
+      this.device = null
+      return false
+    }
+  }
+
+  /** 关闭 HID 设备连接 */
+  private closeDevice(): void {
+    if (this.device) {
+      try {
+        this.device.close()
+      } catch {
+        // ignore close errors
+      }
+      this.device = null
+      console.log('HID device closed')
+    }
+  }
+
+  /** 发送 APDU 指令（hex 字符串），返回响应 */
+  sendApdu(hexCommand: string): ApduResponse {
+    if (!this.device) {
+      if (!this.openDevice()) {
+        throw new Error('Device not connected or failed to open')
+      }
+    }
+
+    const cmdBytes = hexToBytes(hexCommand)
+
+    // HID write: 第一个字节是 Report ID（通常为 0x00）
+    const writeData = [0x00, ...cmdBytes]
+    console.log('>>> SEND:', bytesToHex(cmdBytes))
+
+    try {
+      this.device!.write(writeData)
+    } catch (err) {
+      // 写入失败可能是设备断开
+      this.closeDevice()
+      throw new Error(`Write failed: ${err}`)
+    }
+
+    // 读取响应（超时 5 秒）
+    let responseBytes: number[]
+    try {
+      const raw = this.device!.readTimeout(5000)
+      if (!raw || raw.length === 0) {
+        throw new Error('Read timeout - no response from device')
+      }
+      responseBytes = Array.from(raw)
+    } catch (err) {
+      this.closeDevice()
+      throw new Error(`Read failed: ${err}`)
+    }
+
+    console.log('<<< RECV:', bytesToHex(responseBytes))
+    return parseApduResponse(responseBytes)
+  }
+
   private checkDevice(): void {
     if (!HID) return
 
@@ -61,6 +134,7 @@ export class UsbManager {
 
       if (targetDevice && !this.isConnected) {
         this.isConnected = true
+        this.openDevice(targetDevice.path)
         const info: DeviceInfo = {
           manufacturer: targetDevice.manufacturer,
           product: targetDevice.product,
@@ -69,9 +143,26 @@ export class UsbManager {
         console.log('Clavis device connected:', info)
         this.mainWindow?.webContents.send('device:connected', info)
       } else if (!targetDevice && this.isConnected) {
-        this.isConnected = false
-        console.log('Clavis device disconnected')
-        this.mainWindow?.webContents.send('device:disconnected')
+        // 只有当设备未打开或真的消失时才标记断开
+        // 某些系统上打开设备后 HID.devices() 可能不再列出该设备
+        if (!this.device) {
+          this.isConnected = false
+          console.log('Clavis device disconnected')
+          this.mainWindow?.webContents.send('device:disconnected')
+        }
+        // 如果 device 仍然打开，尝试验证连接是否还活着
+        if (this.device) {
+          try {
+            // 尝试获取设备信息来验证连接
+            this.device.getDeviceInfo()
+          } catch {
+            // 读取失败说明设备真的断开了
+            this.isConnected = false
+            this.closeDevice()
+            console.log('Clavis device disconnected (verified)')
+            this.mainWindow?.webContents.send('device:disconnected')
+          }
+        }
       }
     } catch (err) {
       console.error('Error polling USB devices:', err)
@@ -80,6 +171,7 @@ export class UsbManager {
 
   destroy(): void {
     this.stopPolling()
+    this.closeDevice()
     this.mainWindow = null
   }
 }

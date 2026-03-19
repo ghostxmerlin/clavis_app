@@ -4,6 +4,7 @@ import LockScreen from './components/LockScreen'
 import Layout, { type NavPage } from './components/Layout'
 import PasswordList from './components/PasswordList'
 import FileManager from './components/FileManager'
+import UsbDebugPanel from './components/UsbDebugPanel'
 
 function App(): React.JSX.Element {
   const { connected, deviceInfo, toggleMockConnection } = useDeviceStatus()
@@ -33,6 +34,7 @@ function App(): React.JSX.Element {
     <Layout page={page} onPageChange={setPage} deviceInfo={deviceInfo}>
       {page === 'passwords' && <PasswordList />}
       {page === 'files' && <FileManager />}
+      {page === 'usb-debug' && <UsbDebugPanel />}
     </Layout>
   )
 }

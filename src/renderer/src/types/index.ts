@@ -49,4 +49,16 @@ export interface ClavisAPI {
   // Dialog helpers
   showOpenDialog: () => Promise<string | null>
   showSaveDialog: (defaultName: string) => Promise<string | null>
+
+  // APDU debug
+  sendApdu: (hexCommand: string) => Promise<{
+    success: boolean
+    response?: {
+      raw: string
+      sw1: number
+      sw2: number
+      data: string
+    }
+    error?: string
+  }>
 }

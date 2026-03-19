@@ -138,6 +138,16 @@ function registerIpcHandlers(): void {
   ipcMain.handle('device:status', () => ({
     connected: usbManager.getConnectionStatus()
   }))
+
+  // APDU debug: send raw hex command to device
+  ipcMain.handle('apdu:send', (_, hexCommand: string) => {
+    try {
+      const response = usbManager.sendApdu(hexCommand)
+      return { success: true, response }
+    } catch (err) {
+      return { success: false, error: String(err) }
+    }
+  })
 }
 
 // ── Window Creation ──

@@ -15,12 +15,13 @@ import {
 } from '@mui/material'
 import KeyIcon from '@mui/icons-material/Key'
 import FolderIcon from '@mui/icons-material/Folder'
+import BugReportIcon from '@mui/icons-material/BugReport'
 import UsbIcon from '@mui/icons-material/Usb'
 import ShieldIcon from '@mui/icons-material/Shield'
 
 const DRAWER_WIDTH = 240
 
-export type NavPage = 'passwords' | 'files'
+export type NavPage = 'passwords' | 'files' | 'usb-debug'
 
 interface LayoutProps {
   page: NavPage
@@ -43,7 +44,8 @@ export default function Layout({
 
   const navItems: { id: NavPage; label: string; icon: ReactNode }[] = [
     { id: 'passwords', label: '密码管理', icon: <KeyIcon /> },
-    { id: 'files', label: '加密文件', icon: <FolderIcon /> }
+    { id: 'files', label: '加密文件', icon: <FolderIcon /> },
+    { id: 'usb-debug', label: 'USB 调试', icon: <BugReportIcon /> }
   ]
 
   const drawer = (
@@ -87,17 +89,17 @@ export default function Layout({
           WebkitAppRegion: 'drag'
         }}
       >
-        <Toolbar sx={{ WebkitAppRegion: 'no-drag' }}>
+        <Toolbar>
           <IconButton
             color="inherit"
             edge="start"
             onClick={() => setMobileOpen(!mobileOpen)}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: 'none' }, WebkitAppRegion: 'no-drag' }}
           >
             <KeyIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 400 }}>
-            {page === 'passwords' ? '密码管理' : '加密文件'}
+            {page === 'passwords' ? '密码管理' : page === 'files' ? '加密文件' : 'USB 调试'}
           </Typography>
 
           <Tooltip title={deviceInfo?.product || 'Clavis Device'}>
@@ -107,7 +109,7 @@ export default function Layout({
               size="small"
               color="success"
               variant="outlined"
-              sx={{ fontWeight: 500 }}
+              sx={{ fontWeight: 500, WebkitAppRegion: 'no-drag' }}
             />
           </Tooltip>
         </Toolbar>
