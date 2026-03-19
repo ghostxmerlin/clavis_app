@@ -133,6 +133,7 @@ export class UsbManager {
       )
 
       if (targetDevice && !this.isConnected) {
+        // 设备出现 → 标记连接并打开
         this.isConnected = true
         this.openDevice(targetDevice.path)
         const info: DeviceInfo = {
@@ -143,26 +144,11 @@ export class UsbManager {
         console.log('Clavis device connected:', info)
         this.mainWindow?.webContents.send('device:connected', info)
       } else if (!targetDevice && this.isConnected) {
-        // 只有当设备未打开或真的消失时才标记断开
-        // 某些系统上打开设备后 HID.devices() 可能不再列出该设备
-        if (!this.device) {
-          this.isConnected = false
-          console.log('Clavis device disconnected')
-          this.mainWindow?.webContents.send('device:disconnected')
-        }
-        // 如果 device 仍然打开，尝试验证连接是否还活着
-        if (this.device) {
-          try {
-            // 尝试获取设备信息来验证连接
-            this.device.getDeviceInfo()
-          } catch {
-            // 读取失败说明设备真的断开了
-            this.isConnected = false
-            this.closeDevice()
-            console.log('Clavis device disconnected (verified)')
-            this.mainWindow?.webContents.send('device:disconnected')
-          }
-        }
+        // 设备从列表消失 → 标记断开
+        this.isConnected = false
+        this.closeDevice()
+        console.log('Clavis device disconnected')
+        this.mainWindow?.webContents.send('device:disconnected')
       }
     } catch (err) {
       console.error('Error polling USB devices:', err)
