@@ -163,10 +163,10 @@ export default function UsbDebugPanel(): React.JSX.Element {
   }
 
   const dirColor = (dir: string): string => {
-    if (dir === 'send') return '#1a73e8'
-    if (dir === 'recv') return '#1e8e3e'
-    if (dir === 'info') return '#f9a825'
-    return '#d93025'
+    if (dir === 'send') return '#5A9A42'
+    if (dir === 'recv') return '#80C269'
+    if (dir === 'info') return '#FFB74D'
+    return '#FF5252'
   }
 
   const dirLabel = (dir: string): string => {
@@ -269,15 +269,15 @@ export default function UsbDebugPanel(): React.JSX.Element {
       <Paper
         sx={{
           border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: '#1e1e1e',
+          borderColor: '#2A2A2A',
+          bgcolor: '#0A0A0A',
           borderRadius: 1,
           overflow: 'hidden'
         }}
       >
-        <Box sx={{ p: 1, borderBottom: '1px solid #333', display: 'flex', alignItems: 'center' }}>
-          <Typography variant="caption" sx={{ color: '#888', flexGrow: 1 }}>
-            通讯日志 · {logs.length} 条记录
+        <Box sx={{ p: 1, borderBottom: '1px solid #1A1A1A', display: 'flex', alignItems: 'center' }}>
+          <Typography variant="caption" sx={{ color: '#5A9A42', flexGrow: 1, fontFamily: 'monospace' }}>
+            {'>'} 通讯日志 · {logs.length} 条记录
           </Typography>
         </Box>
         <Box
@@ -291,8 +291,8 @@ export default function UsbDebugPanel(): React.JSX.Element {
           }}
         >
           {logs.length === 0 ? (
-            <Typography sx={{ color: '#666', textAlign: 'center', py: 4, fontSize: '0.8rem' }}>
-              暂无日志，发送指令后将在此显示收发记录
+            <Typography sx={{ color: '#3A5A2A', textAlign: 'center', py: 4, fontSize: '0.8rem', fontFamily: 'monospace' }}>
+              _ 等待指令...
             </Typography>
           ) : (
             logs.map((entry) => (
@@ -308,7 +308,7 @@ export default function UsbDebugPanel(): React.JSX.Element {
                   px: 0.5
                 }}
               >
-                <Typography sx={{ color: '#666', fontSize: '0.75rem', minWidth: 85, flexShrink: 0, pt: 0.2 }}>
+                <Typography sx={{ color: '#555', fontSize: '0.75rem', minWidth: 85, flexShrink: 0, pt: 0.2, fontFamily: 'monospace' }}>
                   {formatTime(entry.timestamp)}
                 </Typography>
                 <Chip
@@ -316,7 +316,7 @@ export default function UsbDebugPanel(): React.JSX.Element {
                   size="small"
                   sx={{
                     bgcolor: dirColor(entry.direction),
-                    color: '#fff',
+                    color: '#000',
                     fontWeight: 700,
                     fontSize: '0.65rem',
                     height: 20,
@@ -327,7 +327,7 @@ export default function UsbDebugPanel(): React.JSX.Element {
                   {entry.hex && (
                     <Typography
                       sx={{
-                        color: entry.direction === 'send' ? '#6cb6ff' : '#7ee787',
+                        color: entry.direction === 'send' ? '#A3D98F' : '#80C269',
                         fontSize: '0.8rem',
                         fontFamily: 'monospace',
                         wordBreak: 'break-all'
@@ -337,14 +337,14 @@ export default function UsbDebugPanel(): React.JSX.Element {
                     </Typography>
                   )}
                   {entry.detail && (
-                    <Typography sx={{ color: entry.direction === 'error' ? '#f97583' : '#aaa', fontSize: '0.75rem' }}>
+                    <Typography sx={{ color: entry.direction === 'error' ? '#FF5252' : '#666', fontSize: '0.75rem' }}>
                       {entry.detail}
                     </Typography>
                   )}
                 </Box>
                 {entry.hex && (
                   <Tooltip title="复制">
-                    <IconButton size="small" onClick={() => copyLog(entry)} sx={{ color: '#666' }}>
+                    <IconButton size="small" onClick={() => copyLog(entry)} sx={{ color: '#333' }}>
                       <ContentCopyIcon sx={{ fontSize: 14 }} />
                     </IconButton>
                   </Tooltip>

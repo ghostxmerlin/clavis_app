@@ -18,6 +18,7 @@ import FolderIcon from '@mui/icons-material/Folder'
 import BugReportIcon from '@mui/icons-material/BugReport'
 import UsbIcon from '@mui/icons-material/Usb'
 import ShieldIcon from '@mui/icons-material/Shield'
+import ClavisLogo from './ClavisLogo'
 
 const DRAWER_WIDTH = 240
 
@@ -50,11 +51,8 @@ export default function Layout({
 
   const drawer = (
     <Box sx={{ pt: 1 }}>
-      <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <ShieldIcon sx={{ color: 'primary.main', fontSize: 28 }} />
-        <Typography variant="h6" sx={{ fontWeight: 500, color: 'text.primary' }}>
-          Clavis
-        </Typography>
+      <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <ClavisLogo size="1rem" />
       </Box>
       <List sx={{ px: 1 }}>
         {navItems.map((item) => (
@@ -66,7 +64,7 @@ export default function Layout({
               setMobileOpen(false)
             }}
           >
-            <ListItemIcon sx={{ minWidth: 40, color: page === item.id ? 'primary.main' : 'text.secondary' }}>
+            <ListItemIcon sx={{ minWidth: 40 }}>
               {item.icon}
             </ListItemIcon>
             <ListItemText
