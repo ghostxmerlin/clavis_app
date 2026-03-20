@@ -5,9 +5,7 @@ export interface PasswordEntry {
   title: string
   username: string
   password: string
-  url?: string
   notes?: string
-  category?: string
   createdAt: number
   updatedAt: number
 }

@@ -10,9 +10,7 @@ interface PasswordEntry {
   title: string
   username: string
   password: string
-  url?: string
   notes?: string
-  category?: string
   createdAt: number
   updatedAt: number
 }
@@ -31,8 +29,6 @@ let mockPasswords: PasswordEntry[] = [
     title: 'GitHub',
     username: 'user@example.com',
     password: '••••••••',
-    url: 'https://github.com',
-    category: '开发',
     createdAt: Date.now() - 86400000,
     updatedAt: Date.now() - 86400000
   },
@@ -41,8 +37,6 @@ let mockPasswords: PasswordEntry[] = [
     title: 'Gmail',
     username: 'user@gmail.com',
     password: '••••••••',
-    url: 'https://mail.google.com',
-    category: '邮箱',
     createdAt: Date.now() - 172800000,
     updatedAt: Date.now() - 172800000
   },
@@ -51,8 +45,6 @@ let mockPasswords: PasswordEntry[] = [
     title: 'AWS Console',
     username: 'admin',
     password: '••••••••',
-    url: 'https://aws.amazon.com',
-    category: '云服务',
     createdAt: Date.now() - 259200000,
     updatedAt: Date.now() - 259200000
   }

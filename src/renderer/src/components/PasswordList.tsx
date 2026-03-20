@@ -12,7 +12,6 @@ import {
   TableRow,
   Paper,
   Tooltip,
-  Chip,
   TextField,
   InputAdornment
 } from '@mui/material'
@@ -45,8 +44,7 @@ export default function PasswordList(): React.JSX.Element {
   const filtered = passwords.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.username.toLowerCase().includes(search.toLowerCase()) ||
-      (p.url && p.url.toLowerCase().includes(search.toLowerCase()))
+      p.username.toLowerCase().includes(search.toLowerCase())
   )
 
   const handleAdd = (): void => {
@@ -126,8 +124,6 @@ export default function PasswordList(): React.JSX.Element {
               <TableCell sx={{ fontWeight: 600 }}>名称</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>用户名</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>密码</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>网址</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>分类</TableCell>
               <TableCell sx={{ fontWeight: 600 }} align="right">
                 操作
               </TableCell>
@@ -136,7 +132,7 @@ export default function PasswordList(): React.JSX.Element {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                <TableCell colSpan={4} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                   {search ? '没有匹配的密码条目' : '暂无密码条目，点击右下角 + 添加'}
                 </TableCell>
               </TableRow>
@@ -181,16 +177,6 @@ export default function PasswordList(): React.JSX.Element {
                         </IconButton>
                       </Tooltip>
                     </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {entry.url || '—'}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    {entry.category && (
-                      <Chip label={entry.category} size="small" variant="outlined" />
-                    )}
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title="编辑">

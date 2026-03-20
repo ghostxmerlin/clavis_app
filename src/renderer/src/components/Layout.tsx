@@ -51,7 +51,7 @@ export default function Layout({
 
   const drawer = (
     <Box sx={{ pt: 1 }}>
-      <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ px: 2, py: 2, pt: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ClavisLogo size="1rem" />
       </Box>
       <List sx={{ px: 1 }}>

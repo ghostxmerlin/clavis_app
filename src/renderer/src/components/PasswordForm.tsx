@@ -26,31 +26,25 @@ export default function PasswordForm({
   const [title, setTitle] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [url, setUrl] = useState('')
   const [notes, setNotes] = useState('')
-  const [category, setCategory] = useState('')
 
   useEffect(() => {
     if (entry) {
       setTitle(entry.title)
       setUsername(entry.username)
       setPassword(entry.password)
-      setUrl(entry.url || '')
       setNotes(entry.notes || '')
-      setCategory(entry.category || '')
     } else {
       setTitle('')
       setUsername('')
       setPassword('')
-      setUrl('')
       setNotes('')
-      setCategory('')
     }
   }, [entry, open])
 
   const handleSave = (): void => {
     if (!title.trim() || !username.trim() || !password.trim()) return
-    onSave({ title, username, password, url: url || undefined, notes: notes || undefined, category: category || undefined })
+    onSave({ title, username, password, notes: notes || undefined })
   }
 
   return (
@@ -80,20 +74,6 @@ export default function PasswordForm({
             onChange={(e) => setPassword(e.target.value)}
             required
             fullWidth
-          />
-          <TextField
-            label="网址"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            fullWidth
-            placeholder="https://"
-          />
-          <TextField
-            label="分类"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            fullWidth
-            placeholder="例如：社交、邮箱、开发"
           />
           <TextField
             label="备注"
